@@ -9,33 +9,36 @@ import java.awt.event.WindowEvent;
 import java.util.Set;
 
 public class ViewGuiClient {
+    private MessageChecker filter = new MessageChecker();
     private final Client client;
-    private JFrame frame = new JFrame("Чат");
+    private JFrame frame = new JFrame("Chat");
     private JTextArea messages = new JTextArea(30, 20);
     private JTextArea users = new JTextArea(30, 15);
     private JPanel panel = new JPanel();
     private JTextField textField = new JTextField(40);
-    private JButton buttonDisable = new JButton("Отключиться");
-    private JButton buttonConnect = new JButton("Подключиться");
+    private JButton buttonDisable = new JButton("Disconnect");
+    private JButton buttonConnect = new JButton("Connect");
+    private JButton buttonFilter = new JButton("Filter");
 
     public ViewGuiClient(Client client) {
         this.client = client;
     }
 
-    //метод, инициализирующий графический интерфейс клиентского приложения
+    //method,that initialized client GUI
     protected void initFrameClient() {
         messages.setEditable(false);
         users.setEditable(false);
         frame.add(new JScrollPane(messages), BorderLayout.CENTER);
         frame.add(new JScrollPane(users), BorderLayout.EAST);
         panel.add(textField);
+        panel.add(buttonFilter);
         panel.add(buttonConnect);
         panel.add(buttonDisable);
         frame.add(panel, BorderLayout.SOUTH);
         frame.pack();
-        frame.setLocationRelativeTo(null); // при запуске отображает окно по центру экрана
+        frame.setLocationRelativeTo(null); // puts window in the center when runs
         frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-        //класс обработки события при закрытии окна приложения Сервера
+        //class that handles action when server window is closed
         frame.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
@@ -46,6 +49,12 @@ public class ViewGuiClient {
             }
         });
         frame.setVisible(true);
+        buttonFilter.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                filter.reverseFilter();
+            }
+        });
         buttonDisable.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -71,11 +80,11 @@ public class ViewGuiClient {
         messages.append(text);
     }
 
-    //метод обновляющий списо имен подлючившихся пользователей
+    //method that updates connected users names
     protected void refreshListUsers(Set<String> listUsers) {
         users.setText("");
         if (client.isConnect()) {
-            StringBuilder text = new StringBuilder("Список пользователей:\n");
+            StringBuilder text = new StringBuilder("User list:\n");
             for (String user : listUsers) {
                 text.append(user + "\n");
             }
@@ -83,51 +92,51 @@ public class ViewGuiClient {
         }
     }
 
-    //вызывает окно для ввода адреса сервера
+    //Calls a window for server address input
     protected String getServerAddressFromOptionPane() {
         while (true) {
             String addressServer = JOptionPane.showInputDialog(
-                    frame, "Введите адрес сервера:",
-                    "Ввод адреса сервера",
+                    frame, "Input server address:",
+                    "Server address",
                     JOptionPane.QUESTION_MESSAGE
             );
             return addressServer.trim();
         }
     }
 
-    //вызывает окно для ввода порта сервера
+    //Calls a window to input server port
     protected int getPortServerFromOptionPane() {
         while (true) {
             String port = JOptionPane.showInputDialog(
-                    frame, "Введите порт сервера:",
-                    "Ввод порта сервера",
+                    frame, "Input server port:",
+                    "Server port",
                     JOptionPane.QUESTION_MESSAGE
             );
             try {
                 return Integer.parseInt(port.trim());
             } catch (Exception e) {
                 JOptionPane.showMessageDialog(
-                        frame, "Введен неккоректный порт сервера. Попробуйте еще раз.",
-                        "Ошибка ввода порта сервера", JOptionPane.ERROR_MESSAGE
+                        frame, "Incorrect server socket. Please, try again.",
+                        "Error imputing server port", JOptionPane.ERROR_MESSAGE
                 );
             }
         }
     }
 
-    //вызывает окна для ввода имени пользователя
+    //Calls window to input user name
     protected String getNameUser() {
         return JOptionPane.showInputDialog(
-                frame, "Введите имя пользователя:",
-                "Ввод имени пользователя",
+                frame, "Input user name:",
+                "User name",
                 JOptionPane.QUESTION_MESSAGE
         );
     }
 
-    //вызывает окно ошибки с заданным текстом
+    //Calls error window with text
     protected void errorDialogWindow(String text) {
         JOptionPane.showMessageDialog(
                 frame, text,
-                "Ошибка", JOptionPane.ERROR_MESSAGE
+                "Error", JOptionPane.ERROR_MESSAGE
         );
     }
 }
