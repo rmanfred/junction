@@ -4,4 +4,4 @@
 
 **We're presenting a simple web chat created on Java where we have implemented the filter to reduce harassment and anger between users in a chat.**
 
-To have a better impression follow the _link_ to see how the chat works:
+To have a better impression follow the _link_ to see how the fiter works:
