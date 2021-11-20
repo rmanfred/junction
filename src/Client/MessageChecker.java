@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.*;
 
 public class MessageChecker {
+    public static boolean filterMsg = true;
     final HashMap<Integer, String> badWords = new HashMap<>();
     final List<String> niceWords = new ArrayList<>();
 
@@ -67,5 +68,12 @@ public class MessageChecker {
             }
         }
         return contains;
+    }
+        public void reverseFilter() {
+        filterMsg = !filterMsg;
+    }
+
+    public boolean getFilter() {
+        return filterMsg;
     }
 }
