@@ -97,7 +97,7 @@ public class Client {
         try {
             filter = false;
             checker.fillMap(true);
-            if (filter) {
+            if (checker.getFilter()) {
                 List<String> message = checker.isMessageBadFilter(text);
                 if (message.size() != 0) {
                     checker.fillMap(false);
