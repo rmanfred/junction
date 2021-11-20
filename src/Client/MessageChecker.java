@@ -9,11 +9,10 @@ public class MessageChecker {
     final HashMap<Integer, String> badWords = new HashMap<>();
     final List<String> niceWords = new ArrayList<>();
 
-    // Меняем пути
+    // Change the routs accordingly
     String fileOfBadWords = "C:\\Users\\mi\\Desktop\\max\\projects\\chat\\src\\Client\\badWordsList.txt";
     String fileOfNiceWords = "C:\\Users\\mi\\Desktop\\max\\projects\\chat\\src\\Client\\niceWordsList.txt";
 
-    //fill the hashMap w/ bad words
     public void fillMap(boolean isBadFiller) {
         final String words = isBadFiller ? fileOfBadWords : fileOfNiceWords;
 
@@ -30,7 +29,7 @@ public class MessageChecker {
             e.printStackTrace();
         }
     }
-    //method to check if the message contains a bad word
+
     public List<String> isMessageBadFilter(String message) {
         final List<String> usersBadWords = new ArrayList<>();
 
@@ -45,7 +44,6 @@ public class MessageChecker {
     }
 
     public String replaceWords(List<String> usersWords, String message){
-//        final String newMessage = "";
         for (String word : usersWords)
         {
             String toReplaceBy = niceWords.get(getRandomElement(niceWords));

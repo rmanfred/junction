@@ -13,7 +13,7 @@ public class Client {
     private static ModelGuiClient model;
     private static ViewGuiClient gui;
     private boolean filter;
-    private volatile boolean isConnect = false; //флаг отобаржающий состояние подключения клиента  серверу
+    private volatile boolean isConnect = false;
 
     public boolean isConnect() {
         return isConnect;
@@ -23,7 +23,6 @@ public class Client {
         isConnect = connect;
     }
 
-    //точка входа в клиентское приложение
     public static void main(String[] args) {
         Client client = new Client();
         model = new ModelGuiClient();
@@ -39,67 +38,60 @@ public class Client {
         }
     }
 
-    //метод подключения клиента  серверу
     protected void connectToServer() {
-        //если клиент не подключен  сервере то..
         if (!isConnect) {
             while (true) {
                 try {
-                    //вызываем окна ввода адреса, порта сервера
                     String addressServer = gui.getServerAddressFromOptionPane();
                     int port = gui.getPortServerFromOptionPane();
                     //создаем сокет и объект connection
                     Socket socket = new Socket(addressServer, port);
                     connection = new Connection(socket);
                     isConnect = true;
-                    gui.addMessage("Сервисное сообщение: Вы подключились к серверу.\n");
+                    gui.addMessage("Service message: You have connected to the server.\n");
                     break;
                 } catch (Exception e) {
-                    gui.errorDialogWindow("Произошла ошибка! Возможно Вы ввели не верный адрес сервера или порт. Попробуйте еще раз");
+                    gui.errorDialogWindow("An error has occurred! Perhaps, you entered the wrong server address or port. Please, try again");
                     break;
                 }
             }
-        } else gui.errorDialogWindow("Вы уже подключены!");
+        } else gui.errorDialogWindow("You are already connected!");
     }
 
-    //метод, реализующий регистрацию имени пользователя со стороны клиентского приложения
     protected void nameUserRegistration() {
         while (true) {
             try {
                 Message message = connection.receive();
-                //приняли от сервера сообщение, если это запрос имени, то вызываем окна ввода имени, отправляем на сервер имя
                 if (message.getTypeMessage() == MessageType.REQUEST_NAME_USER) {
                     String nameUser = gui.getNameUser();
                     connection.send(new Message(MessageType.USER_NAME, nameUser));
                 }
-                //если сообщение - имя уже используется, выводим соответствующее оуно с ошибой, повторяем ввод имени
                 if (message.getTypeMessage() == MessageType.NAME_USED) {
-                    gui.errorDialogWindow("Данное имя уже используется, введите другое");
+                    gui.errorDialogWindow("This name is already in use, please enter another one");
                     String nameUser = gui.getNameUser();
                     connection.send(new Message(MessageType.USER_NAME, nameUser));
                 }
                 //если имя принято, получаем множество всех подключившихся пользователей, выходим из цикла
                 if (message.getTypeMessage() == MessageType.NAME_ACCEPTED) {
-                    gui.addMessage("Сервисное сообщение: ваше имя принято!\n");
+                    gui.addMessage("Service message: your name is accepted!\n");
                     model.setUsers(message.getListUsers());
                     break;
                 }
             } catch (Exception e) {
                 e.printStackTrace();
-                gui.errorDialogWindow("Произошла ошибка при регистрации имени. Попробуйте переподключиться");
+                gui.errorDialogWindow("An error occurred while registering the name. Try to reconnect");
                 try {
                     connection.close();
                     isConnect = false;
                     break;
                 } catch (IOException ex) {
-                    gui.errorDialogWindow("Ошибка при закрытии соединения");
+                    gui.errorDialogWindow("Error closing connection");
                 }
             }
 
         }
     }
 
-    //метод отправки сообщения предназначенного для других пользователей на сервер
     protected void sendMessageOnServer(String text) {
         final String newMessage;
         try {
@@ -123,33 +115,29 @@ public class Client {
                 }
             }
         } catch (Exception e) {
-            gui.errorDialogWindow("Ошибка при отправки сообщения");
+            gui.errorDialogWindow("Error sending message");
         }
     }
 
-    //метод принимающий с сервера собщение от других клиентов
     protected void receiveMessageFromServer() {
         while (isConnect) {
             try {
                 Message message = connection.receive();
-                //если тип TEXT_MESSAGE, то добавляем текст сообщения в окно переписки
                 if (message.getTypeMessage() == MessageType.TEXT_MESSAGE) {
                     gui.addMessage(message.getTextMessage());
                 }
-                //если сообщение с типо USER_ADDED добавляем сообщение в окно переписки о новом пользователе
                 if (message.getTypeMessage() == MessageType.USER_ADDED) {
                     model.addUser(message.getTextMessage());
                     gui.refreshListUsers(model.getUsers());
-                    gui.addMessage(String.format("Сервисное сообщение: пользователь %s присоединился к чату.\n", message.getTextMessage()));
+                    gui.addMessage(String.format("Service message: user %s joined chat.\n", message.getTextMessage()));
                 }
-                //аналогично для отключения других пользователей
                 if (message.getTypeMessage() == MessageType.REMOVED_USER) {
                     model.removeUser(message.getTextMessage());
                     gui.refreshListUsers(model.getUsers());
-                    gui.addMessage(String.format("Сервисное сообщение: пользователь %s покинул чат.\n", message.getTextMessage()));
+                    gui.addMessage(String.format("Service message: user %s left the chat.\n", message.getTextMessage()));
                 }
             } catch (Exception e) {
-                gui.errorDialogWindow("Ошибка при приеме сообщения от сервера.");
+                gui.errorDialogWindow("An error occurred while receiving a message from the server.");
                 setConnect(false);
                 gui.refreshListUsers(model.getUsers());
                 break;
@@ -157,7 +145,6 @@ public class Client {
         }
     }
 
-    //метод реализующий отключение нашего клиента от чата
     protected void disableClient() {
         try {
             if (isConnect) {

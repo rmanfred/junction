@@ -15,14 +15,12 @@ public class Connection implements Closeable {
         this.in = new ObjectInputStream(socket.getInputStream());
     }
 
-    //метод, отправляющий по сокетному соединению сообщение
     public void send(Message message) throws IOException {
         synchronized (this.out) {
             out.writeObject(message);
         }
     }
 
-    //метод, принимающий сообщение по сокетному соединению
     public Message receive() throws IOException, ClassNotFoundException {
         synchronized (this.in) {
             Message message = (Message) in.readObject();
@@ -30,7 +28,6 @@ public class Connection implements Closeable {
         }
     }
 
-    //метод, зарывающий потоки чтения, записи и сокет
     @Override
     public void close() throws IOException {
         in.close();

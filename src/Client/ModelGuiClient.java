@@ -4,7 +4,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class ModelGuiClient {
-    //в модели лиентского приложения хранится множетство подключившихся пользователей
     private Set<String> users = new HashSet<>();
 
     protected Set<String> getUsers() {

@@ -9,10 +9,10 @@ import java.awt.event.WindowEvent;
 
 
 public class ViewGuiServer {
-    private JFrame frame = new JFrame("Запуск сервера");
+    private JFrame frame = new JFrame("Server start");
     private JTextArea dialogWindow = new JTextArea(10, 40);
-    private JButton buttonStartServer = new JButton("Запустить сервер");
-    private JButton buttonStopServer = new JButton("Остановить сервер");
+    private JButton buttonStartServer = new JButton("Start the server");
+    private JButton buttonStopServer = new JButton("Stop server");
     private JPanel panelButtons = new JPanel();
     private final Server server;
 
@@ -20,18 +20,16 @@ public class ViewGuiServer {
         this.server = server;
     }
 
-    //метод инициализации графического интерфейса приложения сервера
     protected void initFrameServer() {
         dialogWindow.setEditable(false);
-        dialogWindow.setLineWrap(true);  //автоматический перенос строки в JTextArea
+        dialogWindow.setLineWrap(true);
         frame.add(new JScrollPane(dialogWindow), BorderLayout.CENTER);
         panelButtons.add(buttonStartServer);
         panelButtons.add(buttonStopServer);
         frame.add(panelButtons, BorderLayout.SOUTH);
         frame.pack();
-        frame.setLocationRelativeTo(null); // при запуске отображает окно по центру экрана
+        frame.setLocationRelativeTo(null);
         frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-        //класс обработки события при закрытии окна приложения Сервера
         frame.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
@@ -56,25 +54,23 @@ public class ViewGuiServer {
         });
     }
 
-    //метод который добавляет в текстовое окно новое сообщение
     public void refreshDialogWindowServer(String serviceMessage) {
         dialogWindow.append(serviceMessage);
     }
 
-    //метод вызывающий диалоговое окно для ввода порта сервера
     protected int getPortFromOptionPane() {
         while (true) {
             String port = JOptionPane.showInputDialog(
-                    frame, "Введите порт сервера:",
-                    "Ввод порта сервера",
+                    frame, "Enter the server port:",
+                    "Server port input",
                     JOptionPane.QUESTION_MESSAGE
             );
             try {
                 return Integer.parseInt(port.trim());
             } catch (Exception e) {
                 JOptionPane.showMessageDialog(
-                        frame, "Введен неккоректный порт сервера. Попробуйте еще раз.",
-                        "Ошибка ввода порта сервера", JOptionPane.ERROR_MESSAGE
+                        frame, "Incorrect server port entered. Try again.",
+                        "Server port input error", JOptionPane.ERROR_MESSAGE
                 );
             }
         }
