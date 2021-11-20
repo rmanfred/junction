@@ -4,12 +4,14 @@ import Connection.*;
 
 import java.io.IOException;
 import java.net.Socket;
+import java.util.List;
 
 public class Client {
     private Connection connection;
     private static MessageChecker checker;
     private static ModelGuiClient model;
     private static ViewGuiClient gui;
+    private boolean filter;
     private volatile boolean isConnect = false; //флаг отобаржающий состояние подключения клиента  серверу
 
     public boolean isConnect() {
@@ -100,17 +102,28 @@ public class Client {
     protected void sendMessageOnServer(String text) {
         final String newMessage;
         try {
-            checker.fillMap(true);
-
-            List<String> message = checker.isMessageBad(text);
-            if (message.size() != 0)
-            {
-                checker.fillMap(false);
-                newMessage = checker.replaceWords(message, text);
-                connection.send(new Message(MessageType.TEXT_MESSAGE, newMessage));
-                return ;
+            filter = false;
+            checker.fillMap(filter);
+            if (filter) {
+                List<String> message = checker.isMessageBadFilter(text);
+                if (message.size() != 0) {
+                    checker.fillMap(false);
+                    newMessage = checker.replaceWords(message, text);
+                    connection.send(new Message(MessageType.TEXT_MESSAGE, newMessage));
+                    return;
+                }
+            } else {
+                System.out.println("1");
+                if (text.length() != 0) {
+                    if (checker.isMessageBadNoFilter(text)) {
+                        System.out.println("2");
+                        FirstWarningWindow firstWarn = new FirstWarningWindow();
+                    } else {
+                        System.out.println("3");
+                        connection.send(new Message(MessageType.TEXT_MESSAGE, text));
+                    }
+                }
             }
-            connection.send(new Message(MessageType.TEXT_MESSAGE, text));
         } catch (Exception e) {
             gui.errorDialogWindow("Ошибка при отправки сообщения");
         }
