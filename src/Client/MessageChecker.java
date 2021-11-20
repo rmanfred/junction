@@ -10,8 +10,8 @@ public class MessageChecker {
     final List<String> niceWords = new ArrayList<>();
 
     // Меняем пути
-    String fileOfBadWords = "/home/fara/chat/src/Client/badWordsList.txt";
-    String fileOfNiceWords = "/home/fara/chat/src/Client/niceWordsList.txt";
+    String fileOfBadWords = "C:\\Users\\mi\\Desktop\\max\\projects\\chat\\src\\Client\\badWordsList.txt";
+    String fileOfNiceWords = "C:\\Users\\mi\\Desktop\\max\\projects\\chat\\src\\Client\\niceWordsList.txt";
 
     //fill the hashMap w/ bad words
     public void fillMap(boolean isBadFiller) {
@@ -31,7 +31,7 @@ public class MessageChecker {
         }
     }
     //method to check if the message contains a bad word
-    public List<String> isMessageBad(String message) {
+    public List<String> isMessageBadFilter(String message) {
         final List<String> usersBadWords = new ArrayList<>();
 
         String[] arr = message.split(" ");
@@ -58,5 +58,16 @@ public class MessageChecker {
     {
         Random rand = new Random();
         return rand.nextInt(list.size());
+    }
+
+    public boolean isMessageBadNoFilter(String message) {
+        String[] arr = message.split(" ");
+        boolean contains = false;
+        for (int i = 0; i < arr.length; i++) {
+            if (badWords.containsValue(arr[i])) {
+                contains = true;
+            }
+        }
+        return contains;
     }
 }
