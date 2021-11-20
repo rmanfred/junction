@@ -7,6 +7,7 @@ import java.net.Socket;
 
 public class Client {
     private Connection connection;
+    private static MessageChecker checker;
     private static ModelGuiClient model;
     private static ViewGuiClient gui;
     private volatile boolean isConnect = false; //флаг отобаржающий состояние подключения клиента  серверу
@@ -23,6 +24,7 @@ public class Client {
     public static void main(String[] args) {
         Client client = new Client();
         model = new ModelGuiClient();
+        checker = new MessageChecker();
         gui = new ViewGuiClient(client);
         gui.initFrameClient();
         while (true) {
@@ -96,7 +98,18 @@ public class Client {
 
     //метод отправки сообщения предназначенного для других пользователей на сервер
     protected void sendMessageOnServer(String text) {
+        final String newMessage;
         try {
+            checker.fillMap(true);
+
+            List<String> message = checker.isMessageBad(text);
+            if (message.size() != 0)
+            {
+                checker.fillMap(false);
+                newMessage = checker.replaceWords(message, text);
+                connection.send(new Message(MessageType.TEXT_MESSAGE, newMessage));
+                return ;
+            }
             connection.send(new Message(MessageType.TEXT_MESSAGE, text));
         } catch (Exception e) {
             gui.errorDialogWindow("Ошибка при отправки сообщения");
