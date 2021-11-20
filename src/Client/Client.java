@@ -8,6 +8,7 @@ import java.util.List;
 
 public class Client {
     private Connection connection;
+    public static boolean tokenMSG;
     private static MessageChecker checker;
     private static ModelGuiClient model;
     private static ViewGuiClient gui;
@@ -103,7 +104,7 @@ public class Client {
         final String newMessage;
         try {
             filter = false;
-            checker.fillMap(filter);
+            checker.fillMap(true);
             if (filter) {
                 List<String> message = checker.isMessageBadFilter(text);
                 if (message.size() != 0) {
@@ -113,13 +114,10 @@ public class Client {
                     return;
                 }
             } else {
-                System.out.println("1");
                 if (text.length() != 0) {
                     if (checker.isMessageBadNoFilter(text)) {
-                        System.out.println("2");
                         FirstWarningWindow firstWarn = new FirstWarningWindow();
                     } else {
-                        System.out.println("3");
                         connection.send(new Message(MessageType.TEXT_MESSAGE, text));
                     }
                 }
